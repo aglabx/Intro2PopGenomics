@@ -1,27 +1,27 @@
 assembly=$1  # genome assembly
 intervals=$2   # expected nb intervals (number of intervals created can be slightly lower or higher)
 
-module load bioinfo/Java8 # very important for the GATK joint calling
+#module load bioinfo/Java8 # very important for the GATK joint calling
 
 # tmp dir
 assemblyname=$(basename $assembly)
 mkdir tmp_vcf_$assemblyname
 
 # create intervals
-python /home/tleroy/work2/Collab/AfricanRice/script_scaff_length.py $assembly > ./tmp_vcf_$assemblyname/$assemblyname.scaffsize
-python /home/tleroy/work2/Collab/AfricanRice/createintervalsfromscaffsize.py ./tmp_vcf_$assemblyname/$assemblyname.scaffsize $intervals
+python /media/eternus1/nfs/projects/popgen/Intro2PopGenomics/3.2.2/5-Joint_genotyping/script_scaff_length.py $assembly > ./tmp_vcf_$assemblyname/$assemblyname.scaffsize
+python /media/eternus1/nfs/projects/popgen/Intro2PopGenomics/3.2.2/5-Joint_genotyping/createintervalsfromscaffsize.py ./tmp_vcf_$assemblyname/$assemblyname.scaffsize $intervals
 mv scatter*.intervals ./tmp_vcf_$assemblyname/
 cd ./tmp_vcf_$assemblyname/
 
 # loop over intervals
 for i in scatter*.intervals; do
 	#echo "time java -jar /media/bigvol/benoit/software/GenomeAnalysisTK-3.7/GenomeAnalysisTK.jar -T GenotypeGVCFs -nt 1 -R $assembly -o $i.joint_bwa_mem_mdup_raw.vcf -V ../gcfFileList.list  -L $i" > lanceur_interval.sh
-	echo "#$ -m abe" > lanceur_interval.$i.sh
-	echo "#$ -l mem=20G" >> lanceur_interval.$i.sh
-        echo "#$ -l h_vmem=22G" >> lanceur_interval.$i.sh
-    	echo "module load bioinfo/Java8" >> lanceur_interval.$i.sh
+	#echo "#$ -m abe" > lanceur_interval.$i.sh
+	#echo "#$ -l mem=20G" >> lanceur_interval.$i.sh
+        #echo "#$ -l h_vmem=22G" >> lanceur_interval.$i.sh
+    	#echo "module load bioinfo/Java8" >> lanceur_interval.$i.sh
 	echo "java -Xmx4g -jar ~/work/Software/GenomeAnalysisTK-3.7/GenomeAnalysisTK.jar -T GenotypeGVCFs -nt 1 -R $assembly  -o $i.joint_bwa_mem_mdup_raw.vcf -V ../gcfFileList.list  -L $i --includeNonVariantSites" >> lanceur_interval.$i.sh
-	qsub lanceur_interval.$i.sh # qsub or sbatch for genotoul
+	#qsub lanceur_interval.$i.sh # qsub or sbatch for genotoul
     sleep 1
 done
 # merging at the end
