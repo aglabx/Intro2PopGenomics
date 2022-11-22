@@ -32,12 +32,12 @@ for line1 in file1_stream.readlines():
 	size = int(splitted_line1[1]) 
 	totalsize += size
 
-print "assembly=",totalsize
-print "creating ",intervals," intervals"
+#print "assembly=",totalsize
+#print "creating ",intervals," intervals"
 
 
 limit=totalsize / int(intervals)
-print "limit for intervals",limit
+#print "limit for intervals",limit
 
 file1_stream = open(file1)
 
